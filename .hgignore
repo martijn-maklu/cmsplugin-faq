@@ -1,0 +1,16 @@
+syntax: regexp
+\.pyc$
+^media/
+^fabfile
+^nbproject/
+^ref/
+
+syntax: glob
+*.textClipping
+.DS_Store
+project.xml
+*.db
+*.psd
+~*
+*backup
+*svn
