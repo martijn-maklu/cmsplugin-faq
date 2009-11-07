@@ -2,13 +2,14 @@ from cms.plugin_pool import plugin_pool
 from cms.plugin_base import CMSPluginBase
 from cms.models import CMSPlugin
 from django.utils.translation import ugettext_lazy as _
-from models import FaqEntry, FaqList
+from models import FaqEntry, FaqList, FaqEntryLink
 from forms import FaqEntryForm
-from widgets.wymeditor_widget import WYMEditor
-from utils import plugin_tags_to_user_html
+from cms.plugins.text.widgets.wymeditor_widget import WYMEditor
+from cms.plugins.text.utils import plugin_tags_to_user_html
+from django.utils.text import truncate_words
 from django.forms.fields import CharField, BooleanField
 from django.forms import TextInput
-from settings import USE_TINYMCE
+from cms.plugins.text.settings import USE_TINYMCE
 from django.conf import settings
 
 
@@ -55,7 +56,8 @@ class CMSFaqEntryPlugin(CMSPluginBase):
             'body':plugin_tags_to_user_html(instance.body, context, placeholder),
             'topic':instance.topic,
             'placeholder':placeholder,
-            'object':instance
+            'object':instance,
+            'css' : instance.get_css_display(),
         })
         return context
 
@@ -70,27 +72,78 @@ class CMSFaqListPlugin(CMSPluginBase):
     render_template = "plugins/cmsplugin_faq/faq_list.html"
     
     def render(self, context, instance, placeholder):
-        import pprint
-
-#        pprint.pprint(dir(instance))
-#        pprint.pprint(dir(instance.page.cmsplugin_set))
-#        plugins = instance.page.cmsplugin_set.all()
-#        pprint.pprint(plugins)
 
         #get all FaqEntryPlugin on this page
         plugins = instance.page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin')
-#        pprint.pprint(plugins)
         
         faqentry_plugins = []
 
         #make a list of the faqentry plugin objects
         for plugin in plugins:
+            #truncate the entry's body
+            if instance.truncate_body:
+                plugin.faqentry.body = truncate_words(plugin.faqentry.body, instance.truncate_body)
+            #show the entry's body or not
+            if not instance.show_body:
+                plugin.faqentry.body = ''
             faqentry_plugins.append(plugin.faqentry)
-#            pprint.pprint(plugin.faqentry.topic)
-#            pprint.pprint(dir(plugin.faqentry.topic))
 
         context.update({'faq_list':faqentry_plugins, 'placeholder':placeholder})
         context.update({'css' : instance.get_css_display()})
         return context
 
 plugin_pool.register_plugin(CMSFaqListPlugin)
+
+
+class CMSFaqEntryLinkPlugin(CMSPluginBase):
+    """Links to a single FaqEntry plugins"""
+
+    model = FaqEntryLink
+    name = _("FAQ Entry Link")
+    render_template = "plugins/cmsplugin_faq/faq_entry_link.html"
+    
+    def render(self, context, instance, placeholder):
+
+        #if a faqentry is not specified, choose one at random
+        if not instance.link:
+            faqentry_plugins = []
+            #get all FaqEntryPlugins
+            plugins = CMSPlugin.objects.filter(plugin_type='CMSFaqEntryPlugin')
+            #make a list of the faqentry plugin objects
+            for plugin in plugins:
+                faqentry_plugins.append(plugin.faqentry)
+            try:
+                #choose a random one
+                import random
+                instance.link = random.sample(faqentry_plugins, 1)[0]
+                #set the page id of the linked faqentry
+                page_id = instance.link.page_id
+            except (ValueError, AttributeError), e:
+                raise ValueError("No FaqEntryPlugin was returned. Make sure one exists and is published.")
+                
+        #truncate the entry's body
+        if instance.truncate_body and instance.link.body:
+            instance.link.body = truncate_words(instance.link.body, instance.truncate_body)
+            
+        #show the entry's body or not
+        if not instance.show_body:
+            instance.link.body = ''
+
+        #create the link URL
+        from cms.models import Page
+        #if page_id was not set randomly
+        if not page_id:
+            page_id = instance.faqentrylink.link.page_id
+        url = '/' + instance.link.language + Page.objects.get(id=page_id).get_absolute_url()
+        
+        context.update({
+            'body':plugin_tags_to_user_html(instance.link.body, context, placeholder),
+            'topic':instance.link.topic,
+            'url': url,
+            'placeholder':placeholder,
+            'object':instance,
+            'css' : instance.get_css_display(),
+        })
+        return context
+
+plugin_pool.register_plugin(CMSFaqEntryLinkPlugin)
