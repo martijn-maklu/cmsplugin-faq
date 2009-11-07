@@ -1,7 +1,7 @@
-ALPHA
+BETA
 
 Name: cmsplugin-faq
-Description: duplicate of django-cms2's Text plugin: adds a 'topic' field and link anchors in templates; CMSFaqEntryPlugin creates FAQ entries (questions & answers); CMSFaqListPlugin creates <a> anchor list of FAQ entries, on the same page; CMSFaqEntryLinkPlugin links to specific or random CMSFaqEntries 
+Description: duplicate of django-cms2's Text plugin: adds a 'topic' field and link anchors in templates; CMSFaqEntryPlugin creates FAQ entries (questions & answers); CMSFaqListPlugin creates <a> anchor list of FAQ entries, on the same page; CMSFaqEntryLinkPlugin links to specific or random CMSFaqEntries
 Download: http://bitbucket.org/tehfink/cmsplugin-faq/
 
 Requirements:
