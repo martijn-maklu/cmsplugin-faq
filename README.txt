@@ -1,16 +1,16 @@
-PRE-ALPHA
+ALPHA
 
 Name: cmsplugin-faq
-Description: duplicate of django-cms2's Text plugin: adds a 'topic' field and link anchors in templates; CMSFaqEntryPlugin creates FAQ entries (questions & answers), CMSFaqListPlugin creates <a> anchor list of FAQ entries, on the same page
+Description: duplicate of django-cms2's Text plugin: adds a 'topic' field and link anchors in templates; CMSFaqEntryPlugin creates FAQ entries (questions & answers); CMSFaqListPlugin creates <a> anchor list of FAQ entries, on the same page; CMSFaqEntryLinkPlugin links to specific or random CMSFaqEntries 
 Download: http://bitbucket.org/tehfink/cmsplugin-faq/
 
 Requirements:
-- django-cms-2.0: rev 63a124cfda6c10b9f4831da0627a9f80b64e675c
-- django: 1.1
+- django-cms-2.0: 2.0.0.RC2
+- django: 1.1.1
 
 Last tested with:
-- django-cms-2.0: rev 63a124cfda6c10b9f4831da0627a9f80b64e675c
-- django: rev 11600
+- django-cms-2.0: rev 8bdeca47c93709cb20703f11a75097d75998cddc
+- django: 1.1.1
 
 Setup
 - make sure requirements are installed and properly working
@@ -25,15 +25,14 @@ Optional
 
 Todo:
 - allow CMSFaqListPlugin plugin to be on a different page than CMSFaqEntryPlugin
-- add ability to set css for faq entries: CMSPLUGIN_FAQENTRY_CSS_CHOICES
 - test with TinyMCE (should work)
 - subclass Text plugin when this is possible
 
 
 Examples:
 
-CMSPLUGIN_FAQLIST_CSS_CHOICES = (('0', ''),('1', 'faq-list-entry'),('2', 'faq-list-entry-small'),)
-- adds an optional css class to the entry in the faq list in the plugin template
+CMSPLUGIN_FAQENTRY_CSS_CHOICES = (('1', 'featured'),)
+- adds an optional css class to the faq entry in the plugin template
 
 
 Note:
