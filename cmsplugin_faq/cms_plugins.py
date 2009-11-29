@@ -46,7 +46,10 @@ class CMSFaqEntryPlugin(CMSPluginBase):
         return FaqEntryPluginForm
 
     def get_form(self, request, obj=None, **kwargs):
-        plugins = plugin_pool.get_text_enabled_plugins(self.placeholder)
+        page = None
+        if obj:
+            page = obj.page
+        plugins = plugin_pool.get_text_enabled_plugins(self.placeholder, page)
         form = self.get_form_class(request, plugins)
         kwargs['form'] = form # override standard form
         return super(CMSFaqEntryPlugin, self).get_form(request, obj, **kwargs)
@@ -100,6 +103,7 @@ class CMSFaqEntryLinkPlugin(CMSPluginBase):
 
     model = FaqEntryLink
     name = _("FAQ Entry Link")
+    text_enabled = True
     render_template = "plugins/cmsplugin_faq/faq_entry_link.html"
     
     def render(self, context, instance, placeholder):
@@ -134,6 +138,7 @@ class CMSFaqEntryLinkPlugin(CMSPluginBase):
         #if page_id was not set randomly
         if not page_id:
             page_id = instance.faqentrylink.link.page_id
+        import pdb; pdb.set_trace()
         url = '/' + instance.link.language + Page.objects.get(id=page_id).get_absolute_url()
         
         context.update({
