@@ -29,7 +29,9 @@ class FaqEntry(CMSPlugin):
                               applied to allow editing in the
                               admin. Read/write.
                               """)
-    
+
+    search_fields = ('topic', 'body',)
+
     def __unicode__(self):
         return u"%s" % (truncate_words(self.topic, 5)[:30]+"...")
 
