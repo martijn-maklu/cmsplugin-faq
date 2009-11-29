@@ -136,9 +136,11 @@ class CMSFaqEntryLinkPlugin(CMSPluginBase):
         #create the link URL
         from cms.models import Page
         #if page_id was not set randomly
-        if not page_id:
+        try:
+            page_id
+        except (NameError, UnboundLocalError):
             page_id = instance.faqentrylink.link.page_id
-        import pdb; pdb.set_trace()
+#        import pdb; pdb.set_trace()
         url = '/' + instance.link.language + Page.objects.get(id=page_id).get_absolute_url()
         
         context.update({
