@@ -76,8 +76,9 @@ class CMSFaqListPlugin(CMSPluginBase):
     
     def render(self, context, instance, placeholder):
 
-        #get all FaqEntryPlugin on this page
-        plugins = instance.page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin')
+        #get all FaqEntryPlugin on this page and this language
+        language = context.get('lang', settings.LANGUAGE_CODE)
+        plugins = instance.page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin', language=language)
         
         faqentry_plugins = []
 
