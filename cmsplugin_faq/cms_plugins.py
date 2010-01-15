@@ -49,7 +49,7 @@ class CMSFaqEntryPlugin(CMSPluginBase):
         page = None
         if obj:
             page = obj.page
-        plugins = plugin_pool.get_text_enabled_plugins(self.placeholder, page)
+        plugins = plugin_pool.get_text_enabled_plugins(self.placeholder)
         form = self.get_form_class(request, plugins)
         kwargs['form'] = form # override standard form
         return super(CMSFaqEntryPlugin, self).get_form(request, obj, **kwargs)
@@ -76,8 +76,9 @@ class CMSFaqListPlugin(CMSPluginBase):
     
     def render(self, context, instance, placeholder):
 
-        #get all FaqEntryPlugin on this page
-        plugins = instance.page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin')
+        #get all FaqEntryPlugin on this page and this language
+        language = context.get('lang', settings.LANGUAGE_CODE)
+        plugins = instance.page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin', language=language)
         
         faqentry_plugins = []
 
