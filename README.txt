@@ -5,12 +5,8 @@ Description: duplicate of django-cms2's Text plugin: adds a 'topic' field and li
 Download: http://bitbucket.org/tehfink/cmsplugin-faq/
 
 Requirements:
-- django-cms-2.0: 2.0.0
-- django: 1.1.1
-
-Last tested with:
-- django-cms-2.0: rev b8e65a24b0eb1ea329df003af1bb6c2a0cade5c4
-- django: 1.1.1
+- django-cms-2 = master 2.0.2
+- django = 1.1.1
 
 Setup
 - make sure requirements are installed and properly working
@@ -29,6 +25,8 @@ Todo:
 - subclass Text plugin when this is possible
 - add migrations (south)
 
+NB:
+- there is a weird bug where the FaqEntryLinkPlugin lists FaqEntries twice; the second listing is apparently an empty item. I'm looking into this.
 
 Examples:
 
