@@ -26,7 +26,7 @@ Todo:
 - add migrations (south)
 
 NB:
-- there is a weird bug where the FaqEntryLinkPlugin lists FaqEntries twice; the second listing is apparently an empty item. I'm looking into this.
+- if you have CMS_MODERATOR enabled, you will see an issue where the FaqEntryLinkPlugin lists FaqEntries twice; the second listing is apparently an empty item. see: http://groups.google.com/group/django-cms/browse_thread/thread/3bc43ed4eb7c5467/2c4af3741bdbaa2d?lnk=gst&q=cms_moderator#2c4af3741bdbaa2d
 
 Examples:
 
