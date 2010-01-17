@@ -1,34 +1,19 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from cms.models import CMSPlugin, Page
+from cms.models import CMSPlugin
 from django.conf import settings
-from django.utils.html import strip_tags
 from django.utils.text import truncate_words
-from cms.plugins.text.utils import plugin_admin_html_to_tags, plugin_tags_to_admin_html
 from django.conf import settings
+from cms.plugins.text.models import AbstractText
 
 
 #get custom css from settings or use default
 CMSPLUGIN_FAQENTRY_CSS_CHOICES = getattr(settings,"CMSPLUGIN_FAQENTRY_CSS_CHOICES", (('1', 'featured'),) )
 
-class FaqEntry(CMSPlugin):
-    """Copy of Text plugin model, plus additional 'topic' Charfield"""
+class FaqEntry(AbstractText):
+    """Subclass of Text plugin model, plus additional 'topic' & 'css' fields"""
     topic = models.CharField(_("Topic"),max_length=500, help_text=_('FAQ entry topic'))
     css = models.CharField(_('CSS class'), max_length=1, choices=CMSPLUGIN_FAQENTRY_CSS_CHOICES, blank=True, help_text=_('Additional CSS class to apply'))
-    body = models.TextField(_("body"))
-   
-    def _set_body_admin(self, text):
-        self.body = plugin_admin_html_to_tags(text)
-
-    def _get_body_admin(self):
-        return plugin_tags_to_admin_html(self.body)
-
-    body_for_admin = property(_get_body_admin, _set_body_admin, None,
-                              """
-                              body attribute, but with transformations
-                              applied to allow editing in the
-                              admin. Read/write.
-                              """)
 
     search_fields = ('topic', 'body',)
 
