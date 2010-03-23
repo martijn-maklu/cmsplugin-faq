@@ -57,12 +57,12 @@ class CMSFaqEntryPlugin(CMSPluginBase):
     def render(self, context, instance, placeholder):
         from django.template.defaultfilters import slugify
         context.update({
-            'body':plugin_tags_to_user_html(instance.body, context, placeholder),
-            'topic':instance.topic,
+            'body': plugin_tags_to_user_html(instance.body, context, placeholder),
+            'topic': instance.topic,
             'name': slugify(instance.topic),
-            'placeholder':placeholder,
-            'object':instance,
-            'css' : instance.get_css_display(),
+            'css': instance.get_css_display(),
+            'placeholder': placeholder,
+            'object': instance,
         })
         return context
 
@@ -94,15 +94,19 @@ class CMSFaqListPlugin(CMSPluginBase):
                 plugin.faqentry.body = ''
             faqentry_plugins.append(plugin.faqentry)
 
-        context.update({'faq_list':faqentry_plugins, 'placeholder':placeholder})
-        context.update({'css' : instance.get_css_display()})
+        context.update({
+            'faq_list': faqentry_plugins,
+            'css': instance.get_css_display(),
+            'placeholder': placeholder,
+        })
+
         return context
 
 plugin_pool.register_plugin(CMSFaqListPlugin)
 
-
+#DOESN'T WORK WITH 2.0.2 & CMS_MODERATOR: published plugin `link` field is blank, so returned link plugin is random
 class CMSFaqEntryLinkPlugin(CMSPluginBase):
-    """Links to a single FaqEntry plugins"""
+    """Links to a single FaqEntry plugin"""
 
     model = FaqEntryLink
     name = _("FAQ Entry Link")
@@ -110,6 +114,8 @@ class CMSFaqEntryLinkPlugin(CMSPluginBase):
     render_template = "plugins/cmsplugin_faq/faq_entry_link.html"
 
     def render(self, context, instance, placeholder):
+
+#        import ipdb; ipdb.set_trace()
 
         #if a faqentry is not specified, choose one at random
         if not instance.link:
@@ -125,7 +131,7 @@ class CMSFaqEntryLinkPlugin(CMSPluginBase):
                 instance.link = random.sample(faqentry_plugins, 1)[0]
                 #set the page id of the linked faqentry
                 page_id = instance.link.page_id
-            except (ValueError, AttributeError), e:
+            except (ValueError, AttributeError):                    #since this didn't work, we assume no plugin exists
                 raise ValueError("No FaqEntryPlugin was returned. Make sure one exists and is published.")
 
         #truncate the entry's body
@@ -135,8 +141,6 @@ class CMSFaqEntryLinkPlugin(CMSPluginBase):
         #show the entry's body or not
         if not instance.show_body:
             instance.link.body = ''
-
-#        import ipdb; ipdb.set_trace()
 
         context.update({
             'body':plugin_tags_to_user_html(instance.link.body, context, placeholder),
