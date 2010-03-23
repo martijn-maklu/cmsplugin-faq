@@ -39,7 +39,9 @@ class FaqEntry(CMSPlugin):
         from django.template.defaultfilters import slugify
 
         #create the FaqEntry's url as a combination of the Page's url + '#' + the slugified anchor
-        url = "%s#%s" % (Page.objects.get(id=self.page_id).get_absolute_url(language='self.language'), slugify(self.topic))
+        url = "%s#%s" % (self.page.get_absolute_url(language=self.language, fallback=False), slugify(self.topic))
+
+#        import ipdb; ipdb.set_trace()
 
         #supposedly the following is not necessary. but i haven't been able to get it working with multilingual otherwise
         #check if multilingual middleware is installed
