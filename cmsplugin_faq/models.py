@@ -16,7 +16,7 @@ class FaqEntry(CMSPlugin):
     topic = models.CharField(_("Topic"),max_length=500, help_text=_('FAQ entry topic'))
     css = models.CharField(_('CSS class'), max_length=1, choices=CMSPLUGIN_FAQENTRY_CSS_CHOICES, blank=True, help_text=_('Additional CSS class to apply'))
     body = models.TextField(_("body"))
-   
+
     def _set_body_admin(self, text):
         self.body = plugin_admin_html_to_tags(text)
 
@@ -31,6 +31,18 @@ class FaqEntry(CMSPlugin):
                               """)
 
     search_fields = ('topic', 'body',)
+
+    def get_absolute_url(self):
+        """ returns url pointing to the anchor in the cms Page containing the FaqEntry plugin """
+        from django.template.defaultfilters import slugify
+
+        url = "%s#%s" % (Page.objects.get(id=self.page_id).get_absolute_url(language='self.language'), slugify(self.topic))
+
+        #check if multilingual middleware is installed
+        if 'cms.middleware.multilingual.MultilingualURLMiddleware' in settings.MIDDLEWARE_CLASSES:
+            url = '/' + self.language + url
+
+        return url
 
     def __unicode__(self):
         return u"%s" % (truncate_words(self.topic, 5)[:30]+"...")
@@ -47,6 +59,7 @@ class FaqList(CMSPlugin):
 
     def __unicode__(self):
         return u"%s" % (self.page.get_page_title())
+
 
 #get custom css from settings or use default
 CMSPLUGIN_FAQENTRYLINK_CSS_CHOICES = getattr(settings,"CMSPLUGIN_FAQENTRYLINK_CSS_CHOICES", (('1', 'faq-entry-link-small'),) )

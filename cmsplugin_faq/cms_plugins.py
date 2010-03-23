@@ -55,9 +55,11 @@ class CMSFaqEntryPlugin(CMSPluginBase):
         return super(CMSFaqEntryPlugin, self).get_form(request, obj, **kwargs)
 
     def render(self, context, instance, placeholder):
+        from django.template.defaultfilters import slugify
         context.update({
             'body':plugin_tags_to_user_html(instance.body, context, placeholder),
             'topic':instance.topic,
+            'name': slugify(instance.topic),
             'placeholder':placeholder,
             'object':instance,
             'css' : instance.get_css_display(),
@@ -73,13 +75,13 @@ class CMSFaqListPlugin(CMSPluginBase):
     model = FaqList
     name = _("FAQ List")
     render_template = "plugins/cmsplugin_faq/faq_list.html"
-    
+
     def render(self, context, instance, placeholder):
 
         #get all FaqEntryPlugin on this page and this language
         language = context.get('lang', settings.LANGUAGE_CODE)
         plugins = instance.page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin', language=language)
-        
+
         faqentry_plugins = []
 
         #make a list of the faqentry plugin objects
@@ -106,7 +108,7 @@ class CMSFaqEntryLinkPlugin(CMSPluginBase):
     name = _("FAQ Entry Link")
     text_enabled = True
     render_template = "plugins/cmsplugin_faq/faq_entry_link.html"
-    
+
     def render(self, context, instance, placeholder):
 
         #if a faqentry is not specified, choose one at random
@@ -125,29 +127,21 @@ class CMSFaqEntryLinkPlugin(CMSPluginBase):
                 page_id = instance.link.page_id
             except (ValueError, AttributeError), e:
                 raise ValueError("No FaqEntryPlugin was returned. Make sure one exists and is published.")
-                
+
         #truncate the entry's body
         if instance.truncate_body and instance.link.body:
             instance.link.body = truncate_words(instance.link.body, instance.truncate_body)
-            
+
         #show the entry's body or not
         if not instance.show_body:
             instance.link.body = ''
 
-        #create the link URL
-        from cms.models import Page
-        #if page_id was not set randomly
-        try:
-            page_id
-        except (NameError, UnboundLocalError):
-            page_id = instance.faqentrylink.link.page_id
-#        import pdb; pdb.set_trace()
-        url = '/' + instance.link.language + Page.objects.get(id=page_id).get_absolute_url()
-        
+#        import ipdb; ipdb.set_trace()
+
         context.update({
             'body':plugin_tags_to_user_html(instance.link.body, context, placeholder),
             'topic':instance.link.topic,
-            'url': url,
+            'url': instance.link.get_absolute_url(),
             'placeholder':placeholder,
             'object':instance,
             'css' : instance.get_css_display(),
