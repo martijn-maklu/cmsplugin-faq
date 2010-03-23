@@ -34,12 +34,17 @@ class FaqEntry(CMSPlugin):
 
     def get_absolute_url(self):
         """ returns url pointing to the anchor in the cms Page containing the FaqEntry plugin """
+
+        #use django's slugify for the href anchor (e.g.: remove non-ASCII characters)
         from django.template.defaultfilters import slugify
 
+        #create the FaqEntry's url as a combination of the Page's url + '#' + the slugified anchor
         url = "%s#%s" % (Page.objects.get(id=self.page_id).get_absolute_url(language='self.language'), slugify(self.topic))
 
+        #supposedly the following is not necessary. but i haven't been able to get it working with multilingual otherwise
         #check if multilingual middleware is installed
         if 'cms.middleware.multilingual.MultilingualURLMiddleware' in settings.MIDDLEWARE_CLASSES:
+            #prepend language namespace (better way to do this?)
             url = '/' + self.language + url
 
         return url
@@ -66,7 +71,7 @@ CMSPLUGIN_FAQENTRYLINK_CSS_CHOICES = getattr(settings,"CMSPLUGIN_FAQENTRYLINK_CS
 
 class FaqEntryLink(CMSPlugin):
     """Model to give FaqEntryLink plugin various options"""
-    link = models.ForeignKey(FaqEntry, blank=True, null=True, verbose_name=_('Linked FAQ Entry'), help_text=_('Leave empty for random'))
+    link = models.ForeignKey(FaqEntry, limit_choices_to={'publisher_is_draft': False}, blank=True, null=True, verbose_name=_('Linked FAQ Entry'), help_text=_('Leave empty for random'))
     truncate_body = models.PositiveSmallIntegerField(_('Truncate words'), default=5, help_text=_('Truncate FAQ Entry body by this many words; zero means Django default'))
     show_body = models.BooleanField(_('Show FAQ Entry body'),default=True)
     css = models.CharField(_('CSS class'), max_length=1, choices=CMSPLUGIN_FAQENTRYLINK_CSS_CHOICES, blank=True, help_text=_('Additional CSS class to apply'))
