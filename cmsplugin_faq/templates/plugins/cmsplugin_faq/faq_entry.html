@@ -1,7 +1,14 @@
 
 <div class="faq-entry{% if css %} {{ css }}{% endif %}">
-    <div><a name="{{ name }}">{{ topic|safe }}</a></div>
-    <div>
+
+    <div class="faq-entry-topic">
+        <a name="{{ name }}">
+            {{ topic|safe }}
+        </a>
+    </div>
+
+    <div class="faq-entry-body">
         {{ body|safe }}
     </div>
+
 </div>
