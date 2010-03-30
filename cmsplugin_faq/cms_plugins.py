@@ -104,6 +104,7 @@ class CMSFaqListPlugin(CMSPluginBase):
 
 plugin_pool.register_plugin(CMSFaqListPlugin)
 
+
 #DOESN'T WORK WITH 2.0.2 & CMS_MODERATOR: published plugin `link` field is blank, so returned link plugin is random
 class CMSFaqEntryLinkPlugin(CMSPluginBase):
     """Links to a single FaqEntry plugin"""

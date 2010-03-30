@@ -1,6 +1,8 @@
 from django import template
 from cmsplugin_faq.models import FaqEntry
+from django.core.cache import cache
 register = template.Library()
+
 
 
 class LatestFAQsNode(template.Node):
@@ -22,42 +24,46 @@ class LatestFAQsNode(template.Node):
 
     def render(self, context):
 
-        #apparently publisher_is_draft has different meanings depending on the status of CMS_MODERATOR?
-        from django.conf import settings
-        if settings.CMS_MODERATOR:
-            #this seems logical
-            PUBLISHER_STATE = False
-        else:
-            #this does not seem logical
-            PUBLISHER_STATE = True
-
-        #the current django-cms Page of the template tag
-        page = context['current_page']
-
         #shortcircuit for django admin
-        if page is not 'dummy':
+        if context.has_key('current_page'):
+            page = context['current_page']
 
-            #get published descendant Pages of the current Page
-            subpages = page.get_descendants().filter(publisher_is_draft=PUBLISHER_STATE)
+            if page is 'dummy':
+                return ''
 
-            #list of all published faq plugins for descendant and current page
-            allfaqs= []
+            #check cache first
+            if cache.get('cmsplugin_faq_templatetags_get_latest_faqs'):                                     #if latest_pages exists in cache, return it immediately
+                 context[self.varname] = cache.get('cmsplugin_faq_templatetags_get_latest_faqs')
+            else:
+                #apparently publisher_is_draft has different meanings depending on the status of CMS_MODERATOR?
+                from django.conf import settings
+                if settings.CMS_MODERATOR:
+                    #this seems logical
+                    PUBLISHER_STATE = False
+                else:
+                    #this does not seem logical
+                    PUBLISHER_STATE = True
 
-            #get published plugins for this page
-            for faq in page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin', publisher_is_draft=PUBLISHER_STATE):
-                allfaqs.append(faq)
+                #get published descendant Pages of the current Page
+                subpages = page.get_descendants().filter(publisher_is_draft=PUBLISHER_STATE)
 
-            #get published plugins for each subpage
-            for subpage in subpages:
-                for subpagefaq in subpage.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin', publisher_is_draft=PUBLISHER_STATE):
-                    allfaqs.append(subpagefaq)
+                #list of all published faq plugins for descendant and current page
+                allfaqs= []
 
-#            import ipdb; ipdb.set_trace()
+                #get published plugins for this page
+                for faq in page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin', publisher_is_draft=PUBLISHER_STATE):
+                    allfaqs.append(faq)
 
-            #shortened list according to given argument
-            faqs = allfaqs[:self.num]
+                #get published plugins for each subpage
+                for subpage in subpages:
+                    for subpagefaq in subpage.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin', publisher_is_draft=PUBLISHER_STATE):
+                        allfaqs.append(subpagefaq)
 
-            context[self.varname] = faqs
+                #shortened list according to given argument
+                #putting this here for performance reasons?
+                context[self.varname] = allfaqs[:self.num]
+
+                cache.set('cmsplugin_faq_templatetags_get_latest_faqs', context[self.varname])               #add latest_pages to the django cache
 
         return ''
 
