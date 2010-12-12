@@ -12,7 +12,7 @@
             <div>
 
             <div class="faq-entry-body">
-                {{ faq_entry.body|safe|truncatewords_html:10 }}
+                {{ faq_entry.body|safe|striptags|truncatewords_html:10 }}
             <div>
 
         <hr>
