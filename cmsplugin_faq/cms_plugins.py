@@ -55,12 +55,14 @@ class CMSFaqEntryPlugin(CMSPluginBase):
         return super(CMSFaqEntryPlugin, self).get_form(request, obj, **kwargs)
 
     def render(self, context, instance, placeholder):
+        from django.template.defaultfilters import slugify
         context.update({
-            'body': plugin_tags_to_user_html(instance.body, context, placeholder),
-            'topic': instance.topic,
-            'css': instance.get_css_display(),
-            'placeholder': placeholder,
-            'object': instance,
+            'body':         plugin_tags_to_user_html(instance.body, context, placeholder),
+            'topic':        instance.topic,
+            'get_name':     instance.get_name(),
+            'css':          instance.get_css_display(),
+            'placeholder':  placeholder,
+            'object':       instance,
         })
         return context
 
@@ -93,9 +95,9 @@ class CMSFaqListPlugin(CMSPluginBase):
             faqentry_plugins.append(plugin.faqentry)
 
         context.update({
-            'faq_list': faqentry_plugins,
-            'css': instance.get_css_display(),
-            'placeholder': placeholder,
+            'faq_list':     faqentry_plugins,
+            'css':          instance.get_css_display(),
+            'placeholder':  placeholder,
         })
 
         return context
@@ -142,12 +144,12 @@ class CMSFaqEntryLinkPlugin(CMSPluginBase):
             instance.link.body = ''
 
         context.update({
-            'body':plugin_tags_to_user_html(instance.link.body, context, placeholder),
-            'topic':instance.link.topic,
-            'url': instance.link.get_absolute_url(),
-            'placeholder':placeholder,
-            'object':instance,
-            'css' : instance.get_css_display(),
+            'body':         plugin_tags_to_user_html(instance.link.body, context, placeholder),
+            'topic':        instance.link.topic,
+            'css':          instance.get_css_display(),
+            'url':          instance.link.get_absolute_url(),
+            'placeholder':  placeholder,
+            'object':       instance,
         })
         return context
 
