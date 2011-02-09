@@ -1,11 +1,11 @@
 
-<div class="faq-entry-link{% if css %} {{ css }}{% endif %}">
+<span class="faq-entry-link{% if css %} {{ css }}{% endif %}">
 
-    <div class="faq-entry-topic">
+    <span class="faq-entry-topic">
         <a href="{{ url }}">
             {{ topic|safe }}
         </a>
-    </div>
+    </span>
 
     {% if body %}
     <div class="faq-entry-body">
@@ -13,4 +13,4 @@
     </div>
     {% endif %}
 
-</div>
+</span>
