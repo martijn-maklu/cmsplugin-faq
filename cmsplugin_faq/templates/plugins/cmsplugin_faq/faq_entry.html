@@ -1,8 +1,8 @@
 
 <div class="faq-entry{% if css %} {{ css }}{% endif %}">
 
-    <div class="faq-entry-topic">
-        <a name="{{ name }}">
+    <div class="faq-entry-topic" id="{{ get_name }}">
+        <a href="#{{ get_name }}" title="Permalink to this FAQ entry">
             {{ topic|safe }}
         </a>
     </div>

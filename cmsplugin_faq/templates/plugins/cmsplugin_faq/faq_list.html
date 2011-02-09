@@ -8,7 +8,7 @@
         <li{% if css %} class="{{ css }}"{% endif %}>
 
             <div class="faq-entry-topic">
-                <a href="{{ faq_entry.get_absolute_url }}">
+                <a href="#{{ faq_entry.get_name }}">
                     {{ faq_entry.topic|safe }}
                 </a>
             </div>
