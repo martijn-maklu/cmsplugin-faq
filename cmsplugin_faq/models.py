@@ -6,6 +6,7 @@ from django.utils.html import strip_tags
 from django.utils.text import truncate_words
 from cms.plugins.text.utils import plugin_admin_html_to_tags, plugin_tags_to_admin_html
 from django.conf import settings
+from django.template.defaultfilters import slugify
 
 
 #get custom css from settings or use default
@@ -16,6 +17,9 @@ class FaqEntry(CMSPlugin):
     topic = models.CharField(_("Topic"),max_length=500, help_text=_('FAQ entry topic'))
     css = models.CharField(_('CSS class'), max_length=1, choices=CMSPLUGIN_FAQENTRY_CSS_CHOICES, blank=True, help_text=_('Additional CSS class to apply'))
     body = models.TextField(_("body"))
+
+    def get_name(self):
+        return slugify(self.topic)
 
     def _set_body_admin(self, text):
         self.body = plugin_admin_html_to_tags(text)

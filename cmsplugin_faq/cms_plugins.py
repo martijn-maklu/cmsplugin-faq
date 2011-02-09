@@ -55,11 +55,9 @@ class CMSFaqEntryPlugin(CMSPluginBase):
         return super(CMSFaqEntryPlugin, self).get_form(request, obj, **kwargs)
 
     def render(self, context, instance, placeholder):
-        from django.template.defaultfilters import slugify
         context.update({
             'body': plugin_tags_to_user_html(instance.body, context, placeholder),
             'topic': instance.topic,
-            'name': slugify(instance.topic),
             'css': instance.get_css_display(),
             'placeholder': placeholder,
             'object': instance,
