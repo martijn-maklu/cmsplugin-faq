@@ -77,7 +77,7 @@ CMSPLUGIN_FAQENTRYLINK_CSS_CHOICES = getattr(settings,"CMSPLUGIN_FAQENTRYLINK_CS
 
 class FaqEntryLink(CMSPlugin):
     """Model to give FaqEntryLink plugin various options"""
-    link = models.ForeignKey(FaqEntry, limit_choices_to={'publisher_is_draft': False}, blank=True, null=True, verbose_name=_('Linked FAQ Entry'), help_text=_('Leave empty for random'))
+    link = models.ForeignKey(FaqEntry, limit_choices_to={'publisher_is_draft': True}, blank=True, null=True, verbose_name=_('Linked FAQ Entry'), help_text=_('Leave empty for random'))
     truncate_body = models.PositiveSmallIntegerField(_('Truncate words'), default=5, help_text=_('Truncate FAQ Entry body by this many words; zero means Django default'))
     show_body = models.BooleanField(_('Show FAQ Entry body'),default=True)
     css = models.CharField(_('CSS class'), max_length=1, choices=CMSPLUGIN_FAQENTRYLINK_CSS_CHOICES, blank=True, help_text=_('Additional CSS class to apply'))
