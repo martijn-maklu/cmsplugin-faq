@@ -44,7 +44,9 @@ class CMSFaqListPlugin(CMSPluginBase):
 
         #get all FaqEntryPlugins on this page and in this language
         language = context.get('lang', settings.LANGUAGE_CODE)
-        plugins = instance.page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin', language=language)
+        # plugins = instance.page.cmsplugin_set.filter(plugin_type='CMSFaqEntryPlugin', language=language)
+        # fix for django-cms 2.1.3; instance has no "cmsplugin_set" property
+        plugins = FaqEntry.objects.filter(plugin_type='CMSFaqEntryPlugin', language=language, placeholder__page=instance.page)
 
         faqentry_plugins = []
 
